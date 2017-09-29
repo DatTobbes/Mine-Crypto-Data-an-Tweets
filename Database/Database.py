@@ -27,16 +27,17 @@ class DatabaseConnector:
             stmt = "SHOW TABLES LIKE "+tableName
             cur.execute(stmt)
             result = cur.fetchone()
+            connection.close()
             if result:
                 return True
             else:
                 return False
-            connection.close()
+
         except:
             print("Diese Tabelle existiert bereits")
 
 
-    def create_table_actual_coindata(self):
+    def __create_table_actual_coindata(self):
         try:
             connection = self.__createConnection()
             cur = connection.cursor()
@@ -99,8 +100,7 @@ class DatabaseConnector:
 
     #Später könnten mehr Tabellen folgen
     def createTables(self):
-        if self.__checkIfExists("actual_coindata")==False:
-            self.__create_table_actual_coindata()
+        self.__create_table_actual_coindata()
 
 
 if __name__ == "__main__":

@@ -12,10 +12,10 @@ coinReader= CoinIoReader()
 for x in range(15000):
 
     start = time.time()
-    test = coinReader.getCoinCapData('front')
+    test = coinReader.getCoinCapFrontData()
     conn.insertFrontData(test)
     querytime= time.time()-start
-    timeToSleep= 120-querytime
+    timeToSleep= 10-querytime
     print("queryTime: "+str(querytime))
     if timeToSleep < 0:
         timeToSleep=0
