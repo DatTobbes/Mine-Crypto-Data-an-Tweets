@@ -35,9 +35,14 @@ class CoinIoReader:
     #Test Methode läuft noch nicht
     #Content kann nicht in Dict gewandelt werden aber ich schnall nicht wieso
     def getDataOfImportantCoins(self):
-        importantCoins=self.getMostImportantCoins(1000000000)
+        coinDict={}
+        importantCoins=self.getMostImportantCoins(10000000000)
         response= self.getCoinCapData('history/365day/BTC')
-
+        for coin in importantCoins:
+            response = self.getCoinCapData('history/365day/'+coin)
+            dict = response.json()
+            coinDict[coin]=dict
+        return coinDict
 
     # Methode wird noch nicht verwendet
     def getCoins(self):

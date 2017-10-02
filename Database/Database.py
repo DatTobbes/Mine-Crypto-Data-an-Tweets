@@ -65,6 +65,28 @@ class DatabaseConnector:
             print("Fehler beim erstellen der Tabelle actual_coindata")
 
 
+    #diese Methode erstellt eine Tablle für jeden angegeben Coin.
+    def create_table_for_important_coins(self,coinName):
+        print("Erstelle Datenbanktabelle für coin %s" %coinName)
+        try:
+            connection = self.__createConnection()
+            cur = connection.cursor()
+            sql= """CREATE TABLE  `%s` (
+                  `short_name` varchar(10) DEFAULT NULL,
+                  `unixTimeStamp` int(11) NOT NULL,
+                  `mktcap` float NOT NULL,
+                  `price` float NOT NULL,
+                  `volume` float NOT NULL,
+                  `primaryKey` int(11) NOT NULL AUTO_INCREMENT,
+                   PRIMARY KEY (`primaryKey`)
+                    )"""
+            cur.execute(sql, coinName)
+            print("Tablle %s wurde erstellt" %coinName)
+            connection.close()
+        except Exception as inst:
+            print("Fehler beim erstellen der Tabelle %s" %coinName)
+            print(inst)
+
     def select(self, sql):
         connection= self.__createConnection()
         cur = connection.cursor()
@@ -106,6 +128,5 @@ class DatabaseConnector:
 if __name__ == "__main__":
     con= DatabaseConnector('localhost',3306,'root','','coindata')
 
-    con.insert()
-    con.select()
-    con.closeConn()
+
+
