@@ -1,17 +1,20 @@
 import requests
 import json
-
+import time
+import logging
+logging.basicConfig(filename='stockprediction.log', filemode='w', level=logging.INFO, format='%(asctime)s %(message)s')
 
 class CoinIoReader:
     def __init__(self):
         self.url = "http://coincap.io/"
 
 
-
     # Get : http://coincap.io/front/
     def getCoinCapFrontData(self):
+        start = time.time()
         content= self.getCoinCapData('front')
         json_data = json.loads(content.text)
+        logging.info("Time GET: " + str(time.time() - start))
         return json_data
 
     #Get Befehl
@@ -21,6 +24,7 @@ class CoinIoReader:
             return response
         else:
             response.raise_for_status()
+
 
     #Methode wird noch nicht verwendet
     def getMostImportantCoins(self, minMktCap):
@@ -32,7 +36,7 @@ class CoinIoReader:
         return importantCoinList
 
 
-    #Test Methode läuft noch nicht
+    #Test Methode laeuft noch nicht
     #Content kann nicht in Dict gewandelt werden aber ich schnall nicht wieso
     def getDataOfImportantCoins(self):
         coinDict={}
