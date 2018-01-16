@@ -2,7 +2,8 @@ import requests
 import json
 import time
 import logging
-logging.basicConfig(filename='stockprediction.log', filemode='w', level=logging.INFO, format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+
 
 class CoinIoReader:
     def __init__(self):
@@ -14,7 +15,7 @@ class CoinIoReader:
         start = time.time()
         content= self.getCoinCapData('front')
         json_data = json.loads(content.text)
-        logging.info("Time GET: " + str(time.time() - start))
+        logger.info("Time GET: " + str(time.time() - start))
         return json_data
 
     #Get Befehl
