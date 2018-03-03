@@ -92,10 +92,12 @@ class DatabaseConnector:
         cur = connection.cursor()
         cur.execute(sql)
         print(cur.description)
-        for row in cur:
-            print(row)
+        # for row in cur:
+        #     print(row)
+        query_data= cur.fetchall()
         cur.close()
         connection.close()
+        return  query_data
 
     #Schreibt das Ergebnis von  http://coincap.io/front in die Tabelle actual_coindata
     def insertFrontData(self,valuesToInsert):
@@ -126,7 +128,22 @@ class DatabaseConnector:
 
 
 if __name__ == "__main__":
-    con= DatabaseConnector('localhost',3306,'root','','coindata')
+    def parser(x):
+        from pandas import datetime
+        #return datetime.strptime('190' + x, '%Y-%m')
+        return datetime.strptime( x, '%Y-%m-%d %H:%M:%S')
 
+    con= DatabaseConnector('localhost',3306,'root','','coindata')
+    test =con.select("SELECT time, price FROM actual_coindata WHERE short_name='BTC' ")
+
+    import csv
+
+    with open('BTC.csv', 'w', newline='') as csvfile:
+        fieldnames = ['time', 'price']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for line in test:
+            writer.writerow({'time': line[0], 'price': line[1]})
 
 
