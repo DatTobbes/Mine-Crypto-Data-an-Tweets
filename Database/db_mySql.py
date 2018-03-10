@@ -1,7 +1,7 @@
 import pymysql
 
 
-class DatabaseConnector:
+class MySqlDbConnector:
 
     def __init__(self, Host, Port, User, PassW, DatabaseName ):
         self.host=Host
@@ -36,7 +36,6 @@ class DatabaseConnector:
         except:
             print("Diese Tabelle existiert bereits")
 
-
     def __create_table_actual_coindata(self):
         try:
             connection = self.__createConnection()
@@ -63,7 +62,6 @@ class DatabaseConnector:
             connection.close()
         except:
             print("Fehler beim erstellen der Tabelle actual_coindata")
-
 
     #diese Methode erstellt eine Tablle für jeden angegeben Coin.
     def create_table_for_important_coins(self,coinName):
@@ -121,7 +119,6 @@ class DatabaseConnector:
             newList.append([value for (key, value) in sorted(coin.items())])
         return newList
 
-
     #Später könnten mehr Tabellen folgen
     def createTables(self):
         self.__create_table_actual_coindata()
@@ -133,7 +130,7 @@ if __name__ == "__main__":
         #return datetime.strptime('190' + x, '%Y-%m')
         return datetime.strptime( x, '%Y-%m-%d %H:%M:%S')
 
-    con= DatabaseConnector('localhost',3306,'root','','coindata')
+    con= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
     test =con.select("SELECT time, price FROM actual_coindata WHERE short_name='BTC' ")
 
     import csv
