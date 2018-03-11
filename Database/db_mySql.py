@@ -123,6 +123,46 @@ class MySqlDbConnector:
     def createTables(self):
         self.__create_table_actual_coindata()
 
+    def create_tweets_tabel(self):
+        if not self.__checkIfExists('tweets'):
+            self.__create_table_tweet()
+
+    def __create_table_tweet(self):
+        try:
+            connection = self.__createConnection()
+            cur = connection.cursor()
+            sql= """CREATE TABLE `tweets` (
+                  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  `tweet_text` varchar(280) DEFAULT NULL,
+                  `retweetet` tinyint(1) DEFAULT NULL,
+                  `retweetet_count` int(6) DEFAULT NULL,
+                  `sent_pos` float DEFAULT NULL,
+                  `sent_neg` float DEFAULT NULL,
+                  `sent_neu` float DEFAULT NULL,
+                  `sent_comb` float DEFAULT NULL,
+                  `price_diff` tinyint(1) DEFAULT NULL,
+                  `primaryKey` int(11) NOT NULL AUTO_INCREMENT,
+                   PRIMARY KEY (`primaryKey`)
+                    )"""
+            cur.execute(sql)
+            print("Tablle tweet  wurde erstellt")
+            connection.close()
+        except:
+            print("Fehler beim erstellen der Tabelle tweet")
+
+
+    def insertTweets(self,valuesToInsert):
+
+             connection = self.__createConnection()
+             with connection.cursor() as cursor:
+                sql = "INSERT INTO tweets (tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+                cursor.execute(sql,valuesToInsert)
+                connection.commit()
+
+             connection.close()
+
+
+
 
 if __name__ == "__main__":
     def parser(x):
@@ -131,16 +171,20 @@ if __name__ == "__main__":
         return datetime.strptime( x, '%Y-%m-%d %H:%M:%S')
 
     con= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
-    test =con.select("SELECT time, price FROM actual_coindata WHERE short_name='BTC' ")
+    #con.create_tweets_tabel()
 
-    import csv
+    neueListe=['1','2','3']
+    con.insertTweets(neueListe)
+    #test =con.select("SELECT time, price FROM actual_coindata WHERE short_name='BTC' ")
 
-    with open('BTC.csv', 'w', newline='') as csvfile:
-        fieldnames = ['time', 'price']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-        for line in test:
-            writer.writerow({'time': line[0], 'price': line[1]})
+    # import csv
+    #
+    # with open('BTC.csv', 'w', newline='') as csvfile:
+    #     fieldnames = ['time', 'price']
+    #     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    #
+    #     writer.writeheader()
+    #     for line in test:
+    #         writer.writerow({'time': line[0], 'price': line[1]})
 
 
