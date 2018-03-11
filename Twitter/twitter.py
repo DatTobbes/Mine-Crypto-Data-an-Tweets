@@ -31,7 +31,13 @@ class CryptoListner(StreamListener):
         tweet_as_list=[]
         all_data = json.loads(tweet_as_json)
         tweet_as_list.append(all_data['text'])
-        tweet_as_list.append(all_data['retweeted'])
+
+        if all_data['retweeted']:
+            tweet_as_list.append(1)
+        elif not all_data['retweeted']:
+            tweet_as_list.append(0)
+
+
         tweet_as_list.append(all_data['retweet_count'])
 
         sentiment= self.analyzer.analyze_tweet(all_data['text'])

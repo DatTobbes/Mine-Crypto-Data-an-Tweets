@@ -14,7 +14,7 @@ class MySqlDbConnector:
 
     def __createConnection(self):
         try:
-            return pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.password, db=self.db)
+            return pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.password, db=self.db, use_unicode=True, charset="utf8")
         except:
             print("Connection failt")
 
