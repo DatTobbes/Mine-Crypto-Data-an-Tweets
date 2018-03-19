@@ -141,6 +141,8 @@ class MySqlDbConnector:
                   `sent_neu` float DEFAULT NULL,
                   `sent_comb` float DEFAULT NULL,
                   `price_diff` tinyint(1) DEFAULT NULL,
+                  `start_price` float DEFAULT NULL,
+                  `end_price` float DEFAULT NULL,
                   `primaryKey` int(11) NOT NULL AUTO_INCREMENT,
                    PRIMARY KEY (`primaryKey`)
                     )"""
@@ -155,7 +157,7 @@ class MySqlDbConnector:
 
              connection = self.__createConnection()
              with connection.cursor() as cursor:
-                sql = "INSERT INTO tweets (tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+                sql = "INSERT INTO tweets (tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff, start_price, end_price ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                 cursor.execute(sql,valuesToInsert)
                 connection.commit()
 

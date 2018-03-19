@@ -36,7 +36,6 @@ class CoinIoReader:
                 importantCoinList.append(coins["short"])
         return importantCoinList
 
-
     #Test Methode laeuft noch nicht
     #Content kann nicht in Dict gewandelt werden aber ich schnall nicht wieso
     def getDataOfImportantCoins(self):
