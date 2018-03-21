@@ -14,15 +14,15 @@ from sqlalchemy import create_engine
 class CryptoListner(StreamListener):
     def __init__(self):
         self.analyzer = SentimentAnalyzer()
-       # self.db_connector= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
-       # self.db_connector.create_tweets_tabel()
-        self.engine = create_engine('mysql+mysqldb://root:@localhost:3306/coindata', echo=False)
+        #self.db_connector= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
+        #self.db_connector.create_tweets_tabel()
+        self.engine = create_engine('mysql+mysqldb://root:@localhost:3306/coindata?charset=utf8', echo=False, convert_unicode=True, encoding= 'utf8')
         self.coin_cap_reader=CoinIoReader()
         self.tweet_array= np.empty((1,8))
 
     def __wait_till_start(self):
         from datetime import datetime
-        while datetime.now().minute % 40 != 0:
+        while datetime.now().minute % 15 != 0:
             time.sleep(1)
             print(datetime.now())
         print('Starting at' + str(datetime.now()))
@@ -78,12 +78,13 @@ class CryptoListner(StreamListener):
     def __array_in_dataframe(self, price_diff, start_price, end_price):
         tweet_array=self.tweet_array[:]
         self.tweet_array=np.empty((1, 8))
+        tweet_array=tweet_array[1:]
         d=np.full((len(tweet_array)),price_diff)
         s = np.full((len(tweet_array)), start_price)
         e = np.full((len(tweet_array)), end_price)
         tweet_array= np.column_stack([tweet_array, d,s,e])
 
-        data={ 'text':tweet_array[:, 0],
+        data={ 'tweet_text':tweet_array[:, 0],
                'retweeted': tweet_array[:, 1],
                'retweet_count': tweet_array[:, 2],
                'sentiment_pos': tweet_array[:, 3],
@@ -93,20 +94,19 @@ class CryptoListner(StreamListener):
                'price_diff':tweet_array[:, 7],
                'start_price':tweet_array[:, 8],
                'end_price':tweet_array[:, 9]}
-        df= pd.DataFrame(data, columns=['text', 'retweeted', 'retweet_count', 'sentiment_pos',
+        df= pd.DataFrame(data, columns=['tweet_text', 'retweeted', 'retweet_count', 'sentiment_pos',
                                         'sentiment_neg', 'sentiment_neu', 'sentiment_comp','price_diff',
                                         'start_price', 'end_price'])
 
         return df
 
     def write_to_db(self, dataframe):
-        dataframe.to_sql(name = 'tweets', con = self.engine, if_exists = 'append', index = False)
+        dataframe.to_sql(name='tweets', con=self.engine, if_exists='append', index=False)
 
 
     def on_data(self, data):
         try:
             tweet = self.__format_tweet_as_array(data)
-
             self.tweet_array= np.vstack([self.tweet_array, tweet])
             return True
         except BaseException as e:
@@ -125,10 +125,10 @@ class CryptoListner(StreamListener):
                                '#cryptocurrency', '#bitcoin cash', '#bch', '#XRP', '#BCH'], async=True)
 
     def mine_tweets(self):
-        #self.__wait_till_start()
+        self.__wait_till_start()
         self.stream_tweets()
         while True:
-            diff, start, end= self.__get_btc_and_wait(20)
+            diff, start, end= self.__get_btc_and_wait(900)
             print("startprice: %.2f endprice: %.2f" %(start,end))
             df=self.__array_in_dataframe(diff, start, end)
             self.write_to_db(df)
