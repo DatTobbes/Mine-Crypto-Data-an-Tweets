@@ -16,7 +16,8 @@ class CryptoListner(StreamListener):
         self.analyzer = SentimentAnalyzer()
         #self.db_connector= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
         #self.db_connector.create_tweets_tabel()
-        self.engine = create_engine('mysql+mysqldb://root:@localhost:3306/coindata?charset=utf8', echo=False, convert_unicode=True, encoding= 'utf8')
+        self.engine = create_engine('mysql+pymysql://root:@localhost:3306/coindata?charset=utf8mb4', echo=False)
+        #self.engine = create_engine('mysql+mysqldb://root:@localhost:3306/coindata?charset=utf8', echo=False, convert_unicode=True, encoding= 'utf8')
         self.coin_cap_reader=CoinIoReader()
         self.tweet_array= np.empty((1,8))
 
