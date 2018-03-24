@@ -132,7 +132,7 @@ class MySqlDbConnector:
             connection = self.__createConnection()
             cur = connection.cursor()
             sql= """CREATE TABLE `tweets` (
-                  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  `time_stamp` int(15) NOT NULL,
                   `tweet_text` varchar(280) DEFAULT NULL,
                   `retweeted` tinyint(1) DEFAULT NULL,
                   `retweet_count` int(6) DEFAULT NULL,
@@ -157,7 +157,7 @@ class MySqlDbConnector:
 
              connection = self.__createConnection()
              with connection.cursor() as cursor:
-                sql = "INSERT INTO tweets (tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff, start_price, end_price ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                sql = "INSERT INTO tweets (time_stamp,tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff, start_price, end_price ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                 cursor.execute(sql,valuesToInsert)
                 connection.commit()
 

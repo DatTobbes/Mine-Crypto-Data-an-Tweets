@@ -7,6 +7,7 @@ from SentimentAnalyze import SentimentAnalyzer
 from Database.db_mySql import MySqlDbConnector
 import pandas as pd
 import numpy as np
+from datetime import datetime
 from Service.AskCoincap import CoinIoReader
 from sqlalchemy import create_engine
 
@@ -14,12 +15,12 @@ from sqlalchemy import create_engine
 class CryptoListner(StreamListener):
     def __init__(self):
         self.analyzer = SentimentAnalyzer()
-        #self.db_connector= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
-        #self.db_connector.create_tweets_tabel()
+        self.db_connector= MySqlDbConnector('localhost', 3306, 'root', '', 'coindata')
+        self.db_connector.create_tweets_tabel()
         self.engine = create_engine('mysql+pymysql://root:@localhost:3306/coindata?charset=utf8mb4', echo=False)
         #self.engine = create_engine('mysql+mysqldb://root:@localhost:3306/coindata?charset=utf8', echo=False, convert_unicode=True, encoding= 'utf8')
         self.coin_cap_reader=CoinIoReader()
-        self.tweet_array= np.empty((1,8))
+        self.tweet_array= np.empty((1,9))
 
     def __wait_till_start(self):
         from datetime import datetime
@@ -62,6 +63,18 @@ class CryptoListner(StreamListener):
         api = tweepy.API(auth)
         return auth
 
+
+    def timestamp_parser(self, time_in_ms):
+        """
+        Twitter Time is in ms since  Jan 1, 1970
+        divide by 1000 to get it in seconds 
+        parse to python timestampe
+        :param time_in_ms: twitter time format
+        :return: 
+        """
+        timestamp=datetime.fromtimestamp(int(time_in_ms) / 1000)
+        return timestamp
+
     def __format_tweet_as_array(self, tweet_as_json):
         all_data = json.loads(tweet_as_json)
         sentiment = self.analyzer.analyze_tweet(all_data['text'])
@@ -71,34 +84,29 @@ class CryptoListner(StreamListener):
         elif not all_data['retweeted']:
             is_retweeted = 0
 
-        tweet_as_array=np.asarray([all_data['text'],is_retweeted,all_data['retweet_count'], sentiment['pos'],
+        tweet_as_array=np.asarray([int(all_data['timestamp_ms'])/1000, all_data['text'], is_retweeted,all_data['retweet_count'], sentiment['pos'],
                                    sentiment['neg'], sentiment['neu'], sentiment['compound'], 0])
 
         return tweet_as_array
 
     def __array_in_dataframe(self, price_diff, start_price, end_price):
         tweet_array=self.tweet_array[:]
-        self.tweet_array=np.empty((1, 8))
+        self.tweet_array=np.empty((1, 9))
         tweet_array=tweet_array[1:]
-        d=np.full((len(tweet_array)),price_diff)
-        s = np.full((len(tweet_array)), start_price)
-        e = np.full((len(tweet_array)), end_price)
-        tweet_array= np.column_stack([tweet_array, d,s,e])
+        data={  'time_stamp':tweet_array[:, 0],
+                'tweet_text':tweet_array[:, 1],
+                'retweeted': tweet_array[:, 2],
+                'retweet_count': tweet_array[:, 3],
+                'sentiment_pos': tweet_array[:, 4],
+                'sentiment_neg': tweet_array[:, 5],
+                'sentiment_neu': tweet_array[:, 6],
+                'sentiment_comp':tweet_array[:, 7]}
 
-        data={ 'tweet_text':tweet_array[:, 0],
-               'retweeted': tweet_array[:, 1],
-               'retweet_count': tweet_array[:, 2],
-               'sentiment_pos': tweet_array[:, 3],
-               'sentiment_neg': tweet_array[:, 4],
-               'sentiment_neu': tweet_array[:, 5],
-               'sentiment_comp':tweet_array[:, 6],
-               'price_diff':tweet_array[:, 7],
-               'start_price':tweet_array[:, 8],
-               'end_price':tweet_array[:, 9]}
-        df= pd.DataFrame(data, columns=['tweet_text', 'retweeted', 'retweet_count', 'sentiment_pos',
-                                        'sentiment_neg', 'sentiment_neu', 'sentiment_comp','price_diff',
-                                        'start_price', 'end_price'])
-
+        df = pd.DataFrame(data, columns=['time_stamp','tweet_text', 'retweeted', 'retweet_count', 'sentiment_pos',
+                                         'sentiment_neg', 'sentiment_neu', 'sentiment_comp'])
+        df['price_diff']= price_diff
+        df['start_price']= start_price
+        df['end_price']= end_price
         return df
 
     def write_to_db(self, dataframe):
@@ -129,6 +137,9 @@ class CryptoListner(StreamListener):
         self.__wait_till_start()
         self.stream_tweets()
         while True:
+            #Kann zum debuggen einkommentiert werden
+            #diff, start, end=1,2,3
+            #time.sleep(10)
             diff, start, end= self.__get_btc_and_wait(900)
             print("startprice: %.2f endprice: %.2f" %(start,end))
             df=self.__array_in_dataframe(diff, start, end)

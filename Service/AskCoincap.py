@@ -40,7 +40,7 @@ class CoinIoReader:
     #Content kann nicht in Dict gewandelt werden aber ich schnall nicht wieso
     def getDataOfImportantCoins(self):
         coinDict={}
-        importantCoins=self.getMostImportantCoins(10000000000)
+        importantCoins=self.getMostImportantCoins(50000000000)
         response= self.getCoinCapData('history/365day/BTC')
         for coin in importantCoins:
             response = self.getCoinCapData('history/365day/'+coin)
