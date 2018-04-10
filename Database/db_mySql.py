@@ -157,7 +157,7 @@ class MySqlDbConnector:
 
              connection = self.__createConnection()
              with connection.cursor() as cursor:
-                sql = "INSERT INTO tweets (time_stamp,tweet_text,retweetet, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff, start_price, end_price ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                sql = "INSERT INTO tweets (time_stamp,tweet_text,retweeted, retweetet_count,sent_pos,sent_neg,sent_neu, sent_comb,price_diff, start_price, end_price ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                 cursor.execute(sql,valuesToInsert)
                 connection.commit()
 
