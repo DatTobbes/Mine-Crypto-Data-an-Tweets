@@ -32,7 +32,7 @@ class CryptoListner(StreamListener):
 
     def __wait_till_start(self):
         from datetime import datetime
-        while datetime.now().minute % 1 != 0:  # TODO change 1 to 15 for prod
+        while datetime.now().minute % 15 != 0:
             time.sleep(1)
             #print(datetime.now())
         logger.info('Starting at' + str(datetime.now()))
@@ -149,7 +149,7 @@ class CryptoListner(StreamListener):
             #Kann zum debuggen einkommentiert werden
             #diff, start, end=1,2,3
             #time.sleep(10)
-            diff, start, end= self.__get_btc_and_wait(90) # TODO change to 900 for prod
+            diff, start, end= self.__get_btc_and_wait(900)
             print("startprice: %.2f endprice: %.2f" %(start,end))
             df=self.__array_in_dataframe(diff, start, end)
             self.write_to_db(df)
