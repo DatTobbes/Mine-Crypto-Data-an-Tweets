@@ -20,11 +20,11 @@ class MySqlDbConnector:
 
     #Versucht eine Abfrage auf die Tabelle,
     #falls diese nicht vorhanden ist wird eine Exception gemeldet
-    def __checkIfExists(self,tableName):
+    def __checkIfExists(self,table_name):
         try:
             connection= self.__createConnection()
             cur = connection.cursor()
-            stmt = "SHOW TABLES LIKE "+tableName
+            stmt = "SHOW TABLES LIKE "+table_name
             cur.execute(stmt)
             result = cur.fetchone()
             connection.close()
@@ -36,11 +36,11 @@ class MySqlDbConnector:
         except:
             print("Diese Tabelle existiert bereits")
 
-    def __create_table_actual_coindata(self):
+    def __create_table_actual_coindata(self, coin_name):
         try:
             connection = self.__createConnection()
             cur = connection.cursor()
-            sql= """CREATE TABLE `actual_coindata` (
+            sql= """CREATE TABLE `%s` (
                   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                   `short_name` varchar(10) DEFAULT NULL,
                   `long_name` varchar(20) DEFAULT NULL,
@@ -57,11 +57,12 @@ class MySqlDbConnector:
                   `primaryKey` int(11) NOT NULL AUTO_INCREMENT,
                    PRIMARY KEY (`primaryKey`)
                     )"""
-            cur.execute(sql)
-            print("Tablle actual_coindata wurde erstellt")
+            cur.execute(sql, coin_name)
+            print("Tablle %s wurde erstellt" %coin_name)
             connection.close()
-        except:
-            print("Fehler beim erstellen der Tabelle actual_coindata")
+        except Exception as e:
+            print(e.message)
+            print("Fehler beim erstellen der Tabelle %s" %coin_name)
 
     #diese Methode erstellt eine Tablle für jeden angegeben Coin.
     def create_table_for_important_coins(self,coinName):
@@ -120,8 +121,8 @@ class MySqlDbConnector:
         return newList
 
     #Später könnten mehr Tabellen folgen
-    def createTables(self):
-        self.__create_table_actual_coindata()
+    def create_actual_coindata_table(self):
+        self.__create_table_actual_coindata('actual_coindata')
 
     def create_tweets_tabel(self):
         if not self.__checkIfExists('tweets'):
@@ -152,7 +153,6 @@ class MySqlDbConnector:
         except:
             print("Fehler beim erstellen der Tabelle tweet")
 
-
     def insertTweets(self,valuesToInsert):
 
              connection = self.__createConnection()
@@ -162,6 +162,9 @@ class MySqlDbConnector:
                 connection.commit()
 
              connection.close()
+
+    def create_table_with_name(self, table_name):
+        self.__create_table_actual_coindata(table_name)
 
 
 
