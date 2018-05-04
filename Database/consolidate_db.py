@@ -39,14 +39,14 @@ class CoinConsolidator:
     def get_distinct_coins(self, min_volume=500E+6):
         print('Get distinct Coins')
         df = pd.read_sql(con=self.db_connection_acutal_coindata,
-                         sql=sa.text("SELECT DISTINCT(long_name) FROM actual_coindata where mktcap >=:param1;"),
+                         sql=sa.text("SELECT DISTINCT(short_name) FROM actual_coindata where mktcap >=:param1;"),
                          params={'param1': min_volume})
         return df
 
     def get_coin_from_database(self, coin="BTC"):
         print("Querying coin %s" %coin)
         df = pd.read_sql(con= self.db_connection_acutal_coindata,
-                         sql=sa.text("SELECT * FROM actual_coindata where long_name=:param1;"),
+                         sql=sa.text("SELECT * FROM actual_coindata where short_name=:param1;"),
                          params={'param1': coin})
         #df.to_sql('btc', self.db_connection )
         return df
@@ -66,6 +66,6 @@ if __name__ == "__main__":
     most_relevant_coins= c.get_distinct_coins()
 
     for index, row in most_relevant_coins.iterrows():
-        coin_name = row.long_name
+        coin_name = row.short_name
         df = c.get_coin_from_database(coin=coin_name)
         c.wirte_coin_to_table(dataframe=df, table_name=coin_name)
