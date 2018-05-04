@@ -1,6 +1,6 @@
 """
 Mit diesem Script werden Tweets aus einer Tabelle ausgelesen und 
-zählt die einzelnen Wörter in den Tweets
+die einzelnen Wörter in den Tweets gezählt
 """
 
 import pandas as pd
