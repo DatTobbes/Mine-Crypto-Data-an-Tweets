@@ -168,7 +168,7 @@ def plot_forecasts(series, forecasts, n_test):
 
 # load dataset
 series = read_csv('BTC.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
-from  Database.Database import DatabaseConnector
+from  database.Database import DatabaseConnector
 print(series)
 # configure
 n_lag = 1

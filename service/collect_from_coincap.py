@@ -1,11 +1,13 @@
 import requests
 import json
-import time
 import logging
+import time
+
 logger = logging.getLogger(__name__)
 
 
 class CoinIoReader:
+
     def __init__(self):
         self.url = "http://coincap.io/"
 

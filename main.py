@@ -1,6 +1,7 @@
-from Service.AskCoincap import CoinIoReader
-from Database.db_mongo import MongoDBConnector
+from service.collect_from_coincap import CoinIoReader
+from database.db_mongo import MongoDBConnector
 import logging
+
 logging.basicConfig(filename='stockprediction.log', filemode='a', level=logging.INFO, format='%(asctime)s %(message)s')
 
 coinReader = CoinIoReader()
