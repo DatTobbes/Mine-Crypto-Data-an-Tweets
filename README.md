@@ -1,1 +1,2 @@
-# Mine-Crypto-Data-an-Tweets
+# Mine Crypto related Tweets and historical Coindata#
+
